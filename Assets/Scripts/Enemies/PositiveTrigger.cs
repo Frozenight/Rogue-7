@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class PositiveTrigger : MonoBehaviour
 {
+    [SerializeField] private RoomController roomToTrigger;
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-            GameController.instance.StartAIPhasing();
+            roomToTrigger.StartAIPhasing();
     }
 }

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class NegativeTrigger : MonoBehaviour
 {
+    [SerializeField] private RoomController roomToTrigger;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-            GameController.instance.StopAIPhasing();
+            roomToTrigger.StopAIPhasing();
     }
 }

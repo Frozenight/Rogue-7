@@ -6,32 +6,22 @@ using UnityEngine.Rendering.Universal;
 
 public class ColorReader : MonoBehaviour
 {
-    [SerializeField] private Camera renderTextureCamera;
-    [SerializeField] private RenderTexture renderTexture;
+    private Camera renderTextureCamera;
+    private RenderTexture renderTexture;
 
     public bool shouldBePhased { get; private set; } = false;
 
-    private bool readColor = false;
     private Color colorUnderEnemy;
 
-    private void Start()
+    public IEnumerator GetColorUnderEnemy()
     {
-        renderTexture = new RenderTexture(1, 1, 24);
-        renderTextureCamera.targetTexture = renderTexture;
-    }
+        if (renderTextureCamera == null || renderTexture == null)
+            yield break;
 
-    private void Update()
-    {
-        if (readColor)
-        {
-            GetColorUnderEnemy();
-        }
-    }
-
-    public void GetColorUnderEnemy()
-    {
         renderTextureCamera.transform.position = transform.position + Vector3.up;
         renderTextureCamera.transform.rotation = Quaternion.LookRotation(Vector3.down);
+
+        yield return new WaitForEndOfFrame();
 
         Color color = GetCenterPixelColor();
         colorUnderEnemy = color;
@@ -53,6 +43,12 @@ public class ColorReader : MonoBehaviour
         return color;
     }
 
+    public void SetCameraAndRenderTexture(Camera camera, RenderTexture rt)
+    {
+        renderTextureCamera = camera;
+        renderTexture = rt;
+    }
+
     private void CompareColor()
     {
         if (colorUnderEnemy.g > 0.5)
@@ -63,27 +59,5 @@ public class ColorReader : MonoBehaviour
         {
             shouldBePhased = false;
         }
-    }
-
-    private void StartReadingColor()
-    {
-        readColor = true;
-    }
-
-    private void StopReadingColor()
-    {
-        readColor = false;
-    }
-
-    private void OnEnable()
-    {
-        GameController.OnAIPositiveTrigger += StartReadingColor;
-        GameController.OnAINegativeTrigger += StopReadingColor;
-    }
-
-    private void OnDisable()
-    {
-        GameController.OnAIPositiveTrigger -= StartReadingColor;
-        GameController.OnAINegativeTrigger -= StopReadingColor;
     }
 }
