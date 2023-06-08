@@ -9,12 +9,19 @@ public class Movement : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+
     private float playerSpeed = 2.0f;
     private float sprintSpeedMultiplier = 3f;
     private float jumpHeight = 1.0f;
-    private float gravityValue = -9.81f;
+    private float gravityValue = -9.8f;
+    private float distToGround = 0.2f;
     private float turnSmoothVelocity;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float slopeEffectiveAngle;
     public float turnSmoothTime = 0.1f;
+    private float slopeAngle;
+
     private Vector2 moveDirection = Vector2.zero;
     private float currentSpeed;
     private Vector3 lastMoveDir;
@@ -43,8 +50,6 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        // GroundCheck
-        groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
@@ -79,11 +84,31 @@ public class Movement : MonoBehaviour
         {
             currentSpeed = targetSpeed;
         }
-
+        calculateSlope();
         controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime);
-
         float speedPercent = currentSpeed / (playerSpeed * sprintSpeedMultiplier);
         playerAnimator.Move(speedPercent);
+    }
+
+
+    private void FixedUpdate()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround))
+        {
+            slopeAngle = Vector3.Angle(hit.normal, transform.forward) - 90;
+            groundedPlayer = true;
+        }
+        else
+            groundedPlayer = false;
+    }
+
+    private void calculateSlope()
+    {
+        float normalisedSlope = (slopeAngle / 90f) * -1f;
+        if (MathF.Abs(normalisedSlope) < slopeEffectiveAngle)
+            normalisedSlope = 0;
+        currentSpeed += normalisedSlope;
     }
 
 
