@@ -8,25 +8,53 @@ public class Movement : MonoBehaviour
 {
     private CharacterController controller;
     private Vector3 playerVelocity;
-    private bool groundedPlayer;
+    private Coroutine fallCoroutine;
+    private bool _groundedPlayer;
+    public bool groundedPlayer
+    {
+        get { return _groundedPlayer; }
+        set
+        {
+            if (_groundedPlayer == true && value == false)
+            {
+                fallCoroutine = StartCoroutine(startCheckingFall());
+                playerAnimator.ResetFall();
+            }
+            else if (_groundedPlayer == false && value == true)
+            {
+                if (fallCoroutine != null)
+                {
+                    StopCoroutine(fallCoroutine);
+                    fallCoroutine = null;
+                }
+                calculateFallSpeed();
+            }
+            _groundedPlayer = value;
+        }
+    }
 
     private float playerSpeed = 2.0f;
     private float sprintSpeedMultiplier = 3f;
     private float jumpHeight = 1.0f;
     private float gravityValue = -9.8f;
     private float distToGround = 0.2f;
+    private float stopPlayerVariable = 1f;
     private float turnSmoothVelocity;
 
     [Range(0f, 1f)]
     [SerializeField] private float slopeEffectiveAngle;
+    [Range(0f, 3f)]
+    [SerializeField] private float slopeMultiplier;
     public float turnSmoothTime = 0.1f;
     private float slopeAngle;
 
     private Vector2 moveDirection = Vector2.zero;
     private float currentSpeed;
     private Vector3 lastMoveDir;
+    private Vector3 slopeNormal = Vector3.up;
 
     private bool isSprinting = false;
+    private bool canMove = true;
 
     private InputReader playerInput;
     private PlayerAnimator playerAnimator;
@@ -60,7 +88,8 @@ public class Movement : MonoBehaviour
         controller.Move(playerVelocity * Time.deltaTime);
 
         // Movement
-        moveDirection = playerInput.inputVector;
+        if (canMove)
+            moveDirection = playerInput.inputVector;
         float targetSpeed = 0;
         Vector3 moveDir = lastMoveDir;
 
@@ -84,11 +113,19 @@ public class Movement : MonoBehaviour
         {
             currentSpeed = targetSpeed;
         }
+
         calculateSlope();
-        controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime);
+        if (groundedPlayer)
+        {
+            moveDir = Vector3.ProjectOnPlane(moveDir, slopeNormal);
+        }
+        controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime * stopPlayerVariable);
         float speedPercent = currentSpeed / (playerSpeed * sprintSpeedMultiplier);
         playerAnimator.Move(speedPercent);
+
+        currentSpeed = targetSpeed;
     }
+
 
 
     private void FixedUpdate()
@@ -96,11 +133,17 @@ public class Movement : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround))
         {
+            slopeNormal = hit.normal;
             slopeAngle = Vector3.Angle(hit.normal, transform.forward) - 90;
             groundedPlayer = true;
+            playerAnimator.IsGrounded(true);
         }
         else
+        {
+            slopeNormal = Vector3.up;
             groundedPlayer = false;
+            playerAnimator.IsGrounded(false);
+        }
     }
 
     private void calculateSlope()
@@ -108,9 +151,14 @@ public class Movement : MonoBehaviour
         float normalisedSlope = (slopeAngle / 90f) * -1f;
         if (MathF.Abs(normalisedSlope) < slopeEffectiveAngle)
             normalisedSlope = 0;
-        currentSpeed += normalisedSlope;
+        currentSpeed += normalisedSlope * slopeMultiplier;
     }
 
+    private void calculateFallSpeed()
+    {
+        playerAnimator.Fall(playerVelocity.y);
+        calculateLandTime(playerVelocity.y);
+    }
 
     public void Jump()
     {
@@ -123,5 +171,55 @@ public class Movement : MonoBehaviour
     private void Sprint(bool _isSprinting)
     {
         isSprinting = _isSprinting;
+    }
+
+    private void calculateLandTime(float landSpeed)
+    {
+        landSpeed *= -1;
+        if (landSpeed < 4)
+            return;
+        else if (landSpeed < 6)
+            StartCoroutine(pauseMovement(0.0f, true));
+        else
+        {
+            StartCoroutine(pauseMovement(1.53f, false));
+        }
+    }
+
+    private IEnumerator pauseMovement(float pauseTime, bool stopPlayer)
+    {
+        canMove = false;
+        if (stopPlayer)
+        {
+            stopPlayerVariable = 0;
+            yield return new WaitForSeconds(pauseTime);
+        }
+        else
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < pauseTime)
+            {
+                controller.Move(lastMoveDir * 1.5f * Time.deltaTime);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        stopPlayerVariable = 1;
+        canMove = true;
+    }
+
+    private IEnumerator startCheckingFall()
+    {
+        while (true)
+        {
+            if (playerVelocity.y > 2 || playerVelocity.y < -2)
+            {
+                playerAnimator.Fall();
+                yield break;
+            }
+
+            yield return null;
+        }
     }
 }

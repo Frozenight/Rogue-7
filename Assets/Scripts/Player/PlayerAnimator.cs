@@ -11,8 +11,31 @@ public class PlayerAnimator : MonoBehaviour
         animator.SetFloat("SpeedPercent", speedPercent, 0.1f, Time.deltaTime);
     }
 
-    public void Jump()
+    public void IsGrounded(bool isGrounded)
     {
-        animator.SetTrigger("Jump");
+        animator.SetBool("isGrounded", isGrounded);
+    }
+
+    public void Fall()
+    {
+        animator.SetTrigger("Fall");
+    }
+
+    public void Fall(float landSpeed)
+    {
+        landSpeed *= -1;
+        if (landSpeed < 4)
+            animator.SetTrigger("SoftLand");
+        else if (landSpeed < 6)
+            animator.SetFloat("Land", 0.1f);
+        else
+        {
+            animator.SetFloat("Land", 1f);
+        }
+    }
+
+    public void ResetFall()
+    {
+        animator.ResetTrigger("SoftLand");
     }
 }
