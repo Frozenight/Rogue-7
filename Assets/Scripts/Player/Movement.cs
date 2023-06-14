@@ -52,6 +52,7 @@ public class Movement : MonoBehaviour
     private float currentSpeed;
     private Vector3 lastMoveDir;
     private Vector3 slopeNormal = Vector3.up;
+    private Vector3 moveDirSlope;
 
     private bool isSprinting = false;
     private bool canMove = true;
@@ -102,8 +103,8 @@ public class Movement : MonoBehaviour
             moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             targetSpeed = isSprinting ? playerSpeed * sprintSpeedMultiplier : playerSpeed;
             lastMoveDir = moveDir;
+            moveDirSlope = moveDir;
         }
-
         if (currentSpeed * 1.1 > playerSpeed)
         {
             float transitionSpeed = 3f;
@@ -111,9 +112,9 @@ public class Movement : MonoBehaviour
         }
         else
         {
+            moveDirSlope = Vector3.zero;
             currentSpeed = targetSpeed;
         }
-
         calculateSlope();
         if (groundedPlayer)
         {
@@ -122,8 +123,7 @@ public class Movement : MonoBehaviour
         controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime * stopPlayerVariable);
         float speedPercent = currentSpeed / (playerSpeed * sprintSpeedMultiplier);
         playerAnimator.Move(speedPercent);
-
-        currentSpeed = targetSpeed;
+        Debug.Log(currentSpeed);
     }
 
 
@@ -134,7 +134,7 @@ public class Movement : MonoBehaviour
         if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround))
         {
             slopeNormal = hit.normal;
-            slopeAngle = Vector3.Angle(hit.normal, transform.forward) - 90;
+            slopeAngle = Vector3.Angle(hit.normal, lastMoveDir) - 90;
             groundedPlayer = true;
             playerAnimator.IsGrounded(true);
         }
@@ -151,8 +151,14 @@ public class Movement : MonoBehaviour
         float normalisedSlope = (slopeAngle / 90f) * -1f;
         if (MathF.Abs(normalisedSlope) < slopeEffectiveAngle)
             normalisedSlope = 0;
-        currentSpeed += normalisedSlope * slopeMultiplier;
+
+        float slopeSpeedMultiplier = 1f + (normalisedSlope * slopeMultiplier);
+        float targetSpeed = isSprinting ? playerSpeed * sprintSpeedMultiplier : playerSpeed;
+        float transitionSpeed = 3f;
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed * slopeSpeedMultiplier, transitionSpeed * Time.deltaTime);
     }
+
+
 
     private void calculateFallSpeed()
     {
@@ -213,7 +219,7 @@ public class Movement : MonoBehaviour
     {
         while (true)
         {
-            if (playerVelocity.y > 2 || playerVelocity.y < -2)
+            if (playerVelocity.y > 3 || playerVelocity.y < -3)
             {
                 playerAnimator.Fall();
                 yield break;
