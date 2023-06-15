@@ -6,8 +6,13 @@ public class PlayerAnimator : MonoBehaviour
 {
     [SerializeField] private Animator animator;
 
+    [Range(0f, 0.5f)]
+    [SerializeField] private float speedAnimationValueFloor = 0.25f;
+
     public void Move(float speedPercent)
     {
+        if (speedPercent > 0.05 && speedPercent < speedAnimationValueFloor)
+            speedPercent = speedAnimationValueFloor;
         animator.SetFloat("SpeedPercent", speedPercent, 0.1f, Time.deltaTime);
     }
 

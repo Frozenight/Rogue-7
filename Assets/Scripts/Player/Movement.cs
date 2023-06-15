@@ -47,6 +47,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private float slopeMultiplier;
     public float turnSmoothTime = 0.1f;
     private float slopeAngle;
+    float slopeSpeedMultiplier = 1f;
 
     private Vector2 moveDirection = Vector2.zero;
     private float currentSpeed;
@@ -120,10 +121,9 @@ public class Movement : MonoBehaviour
         {
             moveDir = Vector3.ProjectOnPlane(moveDir, slopeNormal);
         }
-        controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime * stopPlayerVariable);
-        float speedPercent = currentSpeed / (playerSpeed * sprintSpeedMultiplier);
+        controller.Move(moveDir.normalized * currentSpeed * slopeSpeedMultiplier * Time.deltaTime * stopPlayerVariable);
+        float speedPercent = currentSpeed * slopeSpeedMultiplier / (playerSpeed * sprintSpeedMultiplier);
         playerAnimator.Move(speedPercent);
-        Debug.Log(currentSpeed);
     }
 
 
@@ -151,11 +151,7 @@ public class Movement : MonoBehaviour
         float normalisedSlope = (slopeAngle / 90f) * -1f;
         if (MathF.Abs(normalisedSlope) < slopeEffectiveAngle)
             normalisedSlope = 0;
-
-        float slopeSpeedMultiplier = 1f + (normalisedSlope * slopeMultiplier);
-        float targetSpeed = isSprinting ? playerSpeed * sprintSpeedMultiplier : playerSpeed;
-        float transitionSpeed = 3f;
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed * slopeSpeedMultiplier, transitionSpeed * Time.deltaTime);
+        slopeSpeedMultiplier = 1f + (normalisedSlope * slopeMultiplier);
     }
 
 
