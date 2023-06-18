@@ -82,4 +82,9 @@ public class PlayerAnimator : MonoBehaviour
             }
         }
     }
+
+    public void SimpleAttack()
+    {
+        animator.SetTrigger("SimpleAttack");
+    }
 }

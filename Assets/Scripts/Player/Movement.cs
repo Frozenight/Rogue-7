@@ -53,13 +53,14 @@ public class Movement : MonoBehaviour
     private float currentSpeed;
     private Vector3 lastMoveDir;
     private Vector3 slopeNormal = Vector3.up;
-    private Vector3 moveDirSlope;
 
     private bool isSprinting = false;
     private bool canMove = true;
+    private bool isAttacking = false;
 
     private InputReader playerInput;
     private PlayerAnimator playerAnimator;
+    [SerializeField] private Attack attackController;
 
     [SerializeField] private Transform cam;
 
@@ -89,6 +90,12 @@ public class Movement : MonoBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
 
+        if (isAttacking)
+        {
+            RotateTowardsTarget();
+            return;
+        }
+
         // Movement
         if (canMove)
             moveDirection = playerInput.inputVector;
@@ -104,7 +111,6 @@ public class Movement : MonoBehaviour
             moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             targetSpeed = isSprinting ? playerSpeed * sprintSpeedMultiplier : playerSpeed;
             lastMoveDir = moveDir;
-            moveDirSlope = moveDir;
         }
         if (currentSpeed * 1.1 > playerSpeed)
         {
@@ -113,7 +119,6 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            moveDirSlope = Vector3.zero;
             currentSpeed = targetSpeed;
         }
         calculateSlope();
@@ -223,5 +228,31 @@ public class Movement : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void StopMovement()
+    {
+        isAttacking = true;
+    }
+
+    public void ContinueMovement()
+    {
+        isAttacking = false;
+    }
+
+    private void RotateTowardsTarget()
+    {
+        if (attackController.target == null)
+        {
+            return;
+        }
+
+        Vector3 targetDirection = attackController.target.position - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+        Debug.Log(transform.rotation + " " + targetRotation);
+
+        // Smoothly rotate towards the target rotation
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
     }
 }
