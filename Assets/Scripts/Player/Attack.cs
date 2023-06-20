@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    public Transform target;
     [SerializeField] private GameObject hand;
     [SerializeField] private Transform shootingPoint;
     [SerializeField] private GameObject projectilePrefab;
@@ -25,12 +24,14 @@ public class Attack : MonoBehaviour
 
     private void SimpleAttack()
     {
+        if (GetComponent<Targeting>().GetTarget() == null)
+            return;
         GameObject projectileObject = Instantiate(projectilePrefab, shootingPoint.position, Quaternion.identity);
         SimpleProjectile projectile = projectileObject.GetComponent<SimpleProjectile>();
 
         if (projectile != null)
         {
-            projectile.SetTarget(target.position);
+            projectile.SetTarget(GetComponent<Targeting>().GetTarget().position);
             projectile.handPoistion = hand;
             animEventController.projectile = projectile;
         }

@@ -60,7 +60,7 @@ public class Movement : MonoBehaviour
 
     private InputReader playerInput;
     private PlayerAnimator playerAnimator;
-    [SerializeField] private Attack attackController;
+    [SerializeField] private Targeting targetController;
 
     [SerializeField] private Transform cam;
 
@@ -242,17 +242,18 @@ public class Movement : MonoBehaviour
 
     private void RotateTowardsTarget()
     {
-        if (attackController.target == null)
+        if (targetController.GetTarget() == null)
         {
             return;
         }
 
-        Vector3 targetDirection = attackController.target.position - transform.position;
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        Vector3 targetDirection = targetController.GetTarget().position - transform.position;
+        targetDirection.y = 0; // Set the y-component to zero
 
-        Debug.Log(transform.rotation + " " + targetRotation);
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
 
         // Smoothly rotate towards the target rotation
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
     }
+
 }
