@@ -9,8 +9,14 @@ public class SimpleProjectile : MonoBehaviour
     public GameObject handPoistion;
     private bool release = false;
 
+    private Animator animator;
+    private string releaseTriggerName;
+    [SerializeField] private bool lookAt;
+
     private void Update()
     {
+        if (lookAt)
+            transform.LookAt(targetPosition);
         if (targetPosition != Vector3.zero && release)
         {
             MoveTowardsTarget();
@@ -19,6 +25,11 @@ public class SimpleProjectile : MonoBehaviour
         {
             transform.position = handPoistion.transform.position;
         }
+    }
+    public void SetAnimator(Animator anim, string triggerName)
+    {
+        animator = anim;
+        releaseTriggerName = triggerName;
     }
 
     private void MoveTowardsTarget()
@@ -39,5 +50,10 @@ public class SimpleProjectile : MonoBehaviour
     public void ReleaseProjectile()
     {
         release = true;
+    }
+
+    public void TriggerAnimation()
+    {
+        animator.SetTrigger(releaseTriggerName);
     }
 }
