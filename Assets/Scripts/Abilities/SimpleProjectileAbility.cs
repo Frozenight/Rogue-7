@@ -16,7 +16,7 @@ public class SimpleProjectileAbility : Ability
         if (projectile != null)
         {
             projectile.SetTarget(target.transform.position);
-            projectile.handPoistion = hand;
+            projectile.handPosition = hand;
             animEventController.projectile = projectile;
             projectile.SetAnimator(anim, releaseTriggerName);
             projectile.TriggerAnimation();

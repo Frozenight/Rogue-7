@@ -5,10 +5,16 @@ using UnityEngine;
 public class AnimatorEvents : MonoBehaviour
 {
     [System.NonSerialized] public SimpleProjectile projectile;
+    [System.NonSerialized] public GroundAOE aoe;
     [SerializeField] Movement playerMovement;
     public void ReleaseProejctile()
     {
         projectile.ReleaseProjectile();
+    }
+
+    public void AOEeffect()
+    {
+        aoe.Damage();
     }
 
     public void StopMovement()
@@ -19,5 +25,10 @@ public class AnimatorEvents : MonoBehaviour
     public void ContinueMovement()
     {
         playerMovement.ContinueMovement();
+    }
+
+    public void ActivateAOE()
+    {
+        aoe.Expand();
     }
 }

@@ -512,7 +512,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.013104018, y: -0.4961283, z: 0.007488929, w: 0.86811805}
+  m_LocalRotation: {x: 0.013104015, y: -0.49612823, z: 0.007488927, w: 0.86811805}
   m_LocalPosition: {x: -1.2452238, y: 3.026, z: 4.5471964}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1759,7 +1759,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063362364}
-  m_LocalRotation: {x: 0.013104023, y: -0.4961283, z: 0.0074889315, w: 0.86811805}
+  m_LocalRotation: {x: 0.013104022, y: -0.49612826, z: 0.00748893, w: 0.86811805}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3679,12 +3679,13 @@ MonoBehaviour:
   abilities:
   - {fileID: 11400000, guid: d4e9c07c8d0452b4286064872cdae5ac, type: 2}
   - {fileID: 11400000, guid: 807684fc3eb4e6e439ff554970a12495, type: 2}
+  - {fileID: 11400000, guid: 406aba96bdc8f0246960a88f03547a66, type: 2}
   abilityTriggerNames:
   - SimpleAttack
   - IceAttack
-  anim: {fileID: 1885097895}
+  - GroundAttack
+  anim: {fileID: 807690734}
   animEventController: {fileID: 919132148236284838}
-  animator: {fileID: 807690734}
 --- !u!114 &1885097897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4017,7 +4018,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2034495176}
-  m_LocalRotation: {x: -0.0026470618, y: -0.4961825, z: -0.0015127923, w: 0.86821294}
+  m_LocalRotation: {x: -0.0026470637, y: -0.4961825, z: -0.0015127934, w: 0.86821294}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

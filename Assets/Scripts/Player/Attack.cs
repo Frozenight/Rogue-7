@@ -4,13 +4,12 @@ public class Attack : MonoBehaviour
 {
     [SerializeField] private GameObject hand;
     [SerializeField] private Transform shootingPoint;
-    [SerializeField] private SimpleProjectileAbility[] abilities; // Array of abilities
+    [SerializeField] private Ability[] abilities; // Array of abilities
     [SerializeField] private string[] abilityTriggerNames;
     private int currentAbilityIndex = 0; // Index of the currently active ability
 
-    [SerializeField] private PlayerAnimator anim;
+    [SerializeField] private Animator anim;
     [SerializeField] private AnimatorEvents animEventController;
-    [SerializeField] private Animator animator;
 
     private InputReader playerInput;
 
@@ -30,10 +29,8 @@ public class Attack : MonoBehaviour
             return;
 
         GameObject target = GetComponent<Targeting>().GetTarget().gameObject;
-        abilities[currentAbilityIndex].ActivateAbility(target, hand, animator, animEventController);
 
-        // Trigger the animation for the activated ability using the corresponding trigger name
-        abilities[currentAbilityIndex].TriggerAnimation(animator, abilityTriggerNames[currentAbilityIndex]);
+        abilities[currentAbilityIndex].ActivateAbility(target, hand, anim, animEventController);
 
         currentAbilityIndex = (currentAbilityIndex + 1) % abilities.Length;
     }
