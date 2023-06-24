@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f2f5c6d27d622c4aa827ac49aedc47d, type: 3}
   m_Name: IceProjectile
   m_EditorClassIdentifier: 
+  cooldown: 2
+  abilitySwitchCooldown: 2
   projectilePrefab: {fileID: 5940253929897579736, guid: 00bd6c07ef0c64a40aba422ebccd0e4c,
     type: 3}
   releaseTriggerName: IceAttack

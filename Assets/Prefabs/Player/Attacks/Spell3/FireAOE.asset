@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cb3730eccd453648b70234e180f71b4, type: 3}
   m_Name: FireAOE
   m_EditorClassIdentifier: 
+  cooldown: 4
+  abilitySwitchCooldown: 2
   aoePrefab: {fileID: 3887846141726483329, guid: da112dab6f5e46c41b3bd2d771d9cff5,
     type: 3}
   castTriggerName: GroundAttack

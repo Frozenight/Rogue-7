@@ -73,7 +73,6 @@ public class SimpleProjectile : MonoBehaviour
             float distanceOffset = 0.4f; // Adjust this value as needed
 
             Vector3 spawnPosition = collisionPoint + normal * distanceOffset;
-            Debug.Log(spawnPosition);
             Instantiate(hitVFX, spawnPosition, Quaternion.identity);
             Destroy(gameObject);
         }
