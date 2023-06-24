@@ -16,7 +16,6 @@ public class PulseAOE : GroundAOE
             transform.position = handPosition.transform.position;
         if (expand && currentSize < 1f)
         {
-            Debug.Log("Explading");
             currentSize += expandRate * Time.deltaTime;
             vfx.SetFloat("Size", currentSize);
         }

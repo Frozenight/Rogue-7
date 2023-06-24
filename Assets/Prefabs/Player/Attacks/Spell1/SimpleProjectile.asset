@@ -15,3 +15,5 @@ MonoBehaviour:
   projectilePrefab: {fileID: 4463756158567902951, guid: 30a8c7b7a3c51934f846ce58d3c27e7b,
     type: 3}
   releaseTriggerName: SimpleAttack
+  hitPrefab: {fileID: 4128823968839562950, guid: 0fdfc69ef76c8d14f945a3f4dc7d1b9d,
+    type: 3}

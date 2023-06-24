@@ -16,6 +16,7 @@ public class SimpleProjectile : MonoBehaviour
     private Vector3 targetPosition;
     [SerializeField] private Vector3 offset;
     [HideInInspector] public GameObject handPosition;
+    [HideInInspector] public GameObject hitVFX;
     private bool release = false;
 
     private Animator animator;
@@ -54,20 +55,26 @@ public class SimpleProjectile : MonoBehaviour
     private void MoveTowardsTargetSimple()
     {
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-
-        if (transform.position == targetPosition)
-        {
-            Destroy(gameObject);
-        }
     }
 
     private void MoveTowardsTargetQuadratic()
     {
         float currentSpeed = Mathf.Clamp(speed + (acceleration * Time.deltaTime), 0f, maxSpeed);
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
+    }
 
-        if (transform.position == targetPosition)
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
         {
+            Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
+            Vector3 normal = collisionPoint - other.transform.position;
+            normal.Normalize();
+            float distanceOffset = 0.4f; // Adjust this value as needed
+
+            Vector3 spawnPosition = collisionPoint + normal * distanceOffset;
+            Debug.Log(spawnPosition);
+            Instantiate(hitVFX, spawnPosition, Quaternion.identity);
             Destroy(gameObject);
         }
     }

@@ -7,6 +7,7 @@ public class SimpleProjectileAbility : Ability
 {
     [SerializeField] public GameObject projectilePrefab;
     [SerializeField] private string releaseTriggerName;
+    [SerializeField] private GameObject hitPrefab;
 
     public override void ActivateAbility(GameObject target, GameObject hand, Animator anim, AnimatorEvents animEventController)
     {
@@ -17,6 +18,7 @@ public class SimpleProjectileAbility : Ability
         {
             projectile.SetTarget(target.transform.position);
             projectile.handPosition = hand;
+            projectile.hitVFX = hitPrefab;
             animEventController.projectile = projectile;
             projectile.SetAnimator(anim, releaseTriggerName);
             projectile.TriggerAnimation();

@@ -15,3 +15,5 @@ MonoBehaviour:
   projectilePrefab: {fileID: 5940253929897579736, guid: 00bd6c07ef0c64a40aba422ebccd0e4c,
     type: 3}
   releaseTriggerName: IceAttack
+  hitPrefab: {fileID: 4128823968839562950, guid: 0fdfc69ef76c8d14f945a3f4dc7d1b9d,
+    type: 3}
