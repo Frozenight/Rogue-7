@@ -4,9 +4,11 @@ using UnityEngine.UI;
 public class Attack : MonoBehaviour
 {
     [SerializeField] private GameObject hand;
+    [SerializeField] private Material handMaterialShader;
     [SerializeField] private Transform shootingPoint;
     [SerializeField] private Ability[] abilities; // Array of abilities
     [SerializeField] private string[] abilityTriggerNames;
+    [SerializeField] private Image[] cooldownImages;
     private int currentAbilityIndex = 0; // Index of the currently active ability
     private int nextAbilityIndex = 0;
 
@@ -14,9 +16,10 @@ public class Attack : MonoBehaviour
     [SerializeField] private AnimatorEvents animEventController;
 
     private InputReader playerInput;
-    [SerializeField] private Image[] cooldownImages;
     private AbilityCooldownManager cooldownManager;
     private float globalAttackCooldown = 0f;
+    private float renderValue = 0f; // Initial value of "_RenderValue"
+    private float renderTransitionSpeed = 1f;
 
     private void Awake()
     {
@@ -28,9 +31,10 @@ public class Attack : MonoBehaviour
     {
         playerInput.OnAttack += ActivateCurrentAbility;
 
-        for (int i = 0; i < abilities.Length; i++)
+        foreach (Ability ability in abilities)
         {
-            cooldownManager.StartCooldown(abilities[i], abilities[i].Cooldown, cooldownImages[i]);
+            int abilityIndex = System.Array.IndexOf(abilities, ability);
+            cooldownManager.StartCooldown(ability, ability.Cooldown, cooldownImages[abilityIndex]);
         }
     }
 
@@ -38,6 +42,7 @@ public class Attack : MonoBehaviour
     {
         if (GetComponent<Targeting>().GetTarget() == null || globalAttackCooldown > 0f)
             return;
+
         currentAbilityIndex = nextAbilityIndex;
         GameObject target = GetComponent<Targeting>().GetTarget().gameObject;
         Ability currentAbility = abilities[currentAbilityIndex];
@@ -46,10 +51,11 @@ public class Attack : MonoBehaviour
             Debug.Log("Ability is on cooldown!");
             return;
         }
-
+        SetNextAbilityIndex();
         abilities[currentAbilityIndex].ActivateAbility(target, hand, anim, animEventController);
-        globalAttackCooldown += abilities[currentAbilityIndex].AbilitySwitchCooldown;
-        cooldownManager.StartCooldown(currentAbility, currentAbility.Cooldown, cooldownImages[currentAbilityIndex]);
+        globalAttackCooldown += currentAbility.AbilitySwitchCooldown;
+        int cooldownIndex = System.Array.IndexOf(abilities, currentAbility);
+        cooldownManager.StartCooldown(currentAbility, currentAbility.Cooldown, cooldownImages[cooldownIndex]);
     }
 
     private void Update()
@@ -70,5 +76,29 @@ public class Attack : MonoBehaviour
         if (globalAttackCooldown > 0f)
             globalAttackCooldown -= Time.deltaTime;
         cooldownManager.UpdateCooldowns();
+
+        Ability currentAbility = abilities[currentAbilityIndex];
+        renderValue = cooldownManager.IsOnCooldown(currentAbility) ? 1f : Mathf.MoveTowards(renderValue, 0f, Time.deltaTime * renderTransitionSpeed);
+        handMaterialShader.SetFloat("_RenderValue", renderValue);
+    }
+
+    private void SetNextAbilityIndex()
+    {
+        handMaterialShader.SetFloat("_RenderValue", 1);
+        switch (currentAbilityIndex)
+        {
+            case 0:
+                handMaterialShader.SetColor("_Color", Color.red);
+                return;
+            case 1:
+                handMaterialShader.SetColor("_Color", Color.cyan);
+                return;
+            case 2:
+                handMaterialShader.SetColor("_Color", Color.white);
+                return;
+            default:
+                handMaterialShader.SetColor("_Color", Color.grey);
+                return;
+        }
     }
 }
