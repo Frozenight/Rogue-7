@@ -13,6 +13,7 @@ public class SimpleProjectile : MonoBehaviour
 {
     public ProjectileType projectileType; // Select the projectile type in the inspector
     public float speed = 10f;
+    private GameObject target;
     private Vector3 targetPosition;
     [SerializeField] private Vector3 offset;
     [HideInInspector] public GameObject handPosition;
@@ -31,6 +32,7 @@ public class SimpleProjectile : MonoBehaviour
 
     private void Update()
     {
+        UpdateTargetPosition();
         if (lookAt)
             transform.LookAt(targetPosition);
         if (targetPosition != Vector3.zero && release)
@@ -78,10 +80,17 @@ public class SimpleProjectile : MonoBehaviour
         }
     }
 
-    public void SetTarget(Vector3 target)
+    public void SetTarget(GameObject newTarget)
     {
-        targetPosition = target;
+        target = newTarget;
     }
+
+    private void UpdateTargetPosition()
+    {
+        targetPosition = target.transform.position + new Vector3(0, 1
+            );
+    }
+    
 
     public void ReleaseProjectile()
     {

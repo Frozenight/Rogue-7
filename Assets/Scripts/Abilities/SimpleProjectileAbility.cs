@@ -16,7 +16,7 @@ public class SimpleProjectileAbility : Ability
 
         if (projectile != null)
         {
-            projectile.SetTarget(target.transform.position);
+            projectile.SetTarget(target);
             projectile.handPosition = hand;
             projectile.hitVFX = hitPrefab;
             animEventController.projectile = projectile;
