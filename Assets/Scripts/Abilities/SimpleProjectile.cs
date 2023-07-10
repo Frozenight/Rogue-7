@@ -15,6 +15,7 @@ public class SimpleProjectile : MonoBehaviour
     public float speed = 10f;
     private GameObject target;
     private Vector3 targetPosition;
+    public string enemyTag = "";
     [SerializeField] private Vector3 offset;
     [HideInInspector] public GameObject handPosition;
     [HideInInspector] public GameObject hitVFX;
@@ -67,7 +68,7 @@ public class SimpleProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag(enemyTag))
         {
             Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
             Vector3 normal = collisionPoint - other.transform.position;
@@ -87,8 +88,7 @@ public class SimpleProjectile : MonoBehaviour
 
     private void UpdateTargetPosition()
     {
-        targetPosition = target.transform.position + new Vector3(0, 1
-            );
+        targetPosition = target.transform.position + new Vector3(0, 1);
     }
     
 

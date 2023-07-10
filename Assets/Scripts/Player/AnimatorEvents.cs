@@ -7,6 +7,7 @@ public class AnimatorEvents : MonoBehaviour
     [System.NonSerialized] public SimpleProjectile projectile;
     [System.NonSerialized] public GroundAOE aoe;
     [SerializeField] Movement playerMovement;
+    
     public void ReleaseProejctile()
     {
         projectile.ReleaseProjectile();

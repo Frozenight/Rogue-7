@@ -15,7 +15,7 @@ public abstract class Ability : ScriptableObject
     {
         get { return cooldown; }
     }
-    public abstract void ActivateAbility(GameObject target, GameObject hand, Animator animator, AnimatorEvents animEventController);
+    public abstract void ActivateAbility(GameObject attacker, GameObject target, GameObject hand, Animator animator, AnimatorEvents animEventController);
 
     public void TriggerAnimation(Animator animator, string triggerName)
     {

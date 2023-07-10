@@ -8,7 +8,7 @@ public class GroundAOEAbility : Ability
     [SerializeField] public GameObject aoePrefab;
     [SerializeField] private string castTriggerName;
 
-    public override void ActivateAbility(GameObject target, GameObject hand, Animator anim, AnimatorEvents animEventController)
+    public override void ActivateAbility(GameObject attacker, GameObject target, GameObject hand, Animator anim, AnimatorEvents animEventController)
     {
         GameObject aoeObject = Instantiate(aoePrefab, hand.transform.position, Quaternion.identity);
         GroundAOE aoe = aoeObject.GetComponent<GroundAOE>();

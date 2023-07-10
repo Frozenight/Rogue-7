@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class GoblinMovement : MonoBehaviour
 {
+    [System.NonSerialized] public SimpleProjectile projectile;
+    [SerializeField] private Ability ability; // Array of abilities
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject handPosition;
     private Animator anim;
     private CharacterController controller;
-    public float speed = 3f; // Speed of the goblin's movement
+    private float walkingSpeed = 3f; // Speed of the goblin's movement
+    private float currentSpeed;
     public float rotationSpeed = 2f; // Speed of the goblin's rotation
     public float jumpForce = 50f; // Force applied to make the goblin jump
 
@@ -15,7 +20,8 @@ public class GoblinMovement : MonoBehaviour
     private float gravityValue = -9.8f;
     private float distToGround = 0.2f;
     private bool isAttacking = false;
-    private float attackInterval = 5f;
+    private bool jumpAttacking = false;
+    private float attackInterval = 5f; // Interval for JumpAttack animation
     private float attackTimer = 0f;
 
     public bool groundedPlayer
@@ -25,27 +31,28 @@ public class GoblinMovement : MonoBehaviour
         {
             if (_groundedPlayer == true && value == false)
             {
-                Debug.Log("In the air");
             }
             else if (_groundedPlayer == false && value == true)
             {
-                Debug.Log("Landed");
+
             }
             _groundedPlayer = value;
         }
     }
 
+    private GoblinAttack attackController;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+        attackController = GetComponent<GoblinAttack>();
 
-        StartAttacking();
+        currentSpeed = walkingSpeed;
     }
 
     private void Update()
     {
-
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
@@ -55,18 +62,34 @@ public class GoblinMovement : MonoBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
 
-        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
-        controller.Move(transform.forward * speed * Time.deltaTime);
-
-        // Check if it's time to perform an attack
         if (isAttacking)
         {
-            attackTimer += Time.deltaTime;
-            if (attackTimer >= attackInterval)
+            RotateTowardsTarget();
+            return;
+        }
+        if (jumpAttacking)
+        {
+            RotateTowardsTarget();
+        }
+
+        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+        controller.Move(transform.forward * currentSpeed * Time.deltaTime);
+
+        attackTimer += Time.deltaTime;
+
+        // Check if it's time to perform an attack
+        if (attackTimer >= attackInterval)
+        {
+            if (Random.Range(0, 2) == 0)
             {
-                Attack();
-                attackTimer = 0f;
+                JumpAnimation();
             }
+            else
+            {
+                NormalAttack();
+            }
+
+            attackTimer = 0f;
         }
     }
 
@@ -83,28 +106,69 @@ public class GoblinMovement : MonoBehaviour
         }
     }
 
-
-    private void Attack()
+    private void JumpAnimation()
     {
         anim.SetTrigger("JumpAttack");
         Jump();
     }
 
-    private void Jump()
+    private void NormalAttack()
     {
-        Debug.Log(playerVelocity.y);
-        playerVelocity.y += Mathf.Sqrt(jumpForce * -2f * gravityValue);
-        Debug.Log(playerVelocity.y);
+        anim.SetTrigger("SimpleAttack");
+        ability.ActivateAbility(this.gameObject, player, handPosition, anim, null);
     }
 
-    public void StartAttacking()
+    private void Jump()
+    {
+        playerVelocity.y += Mathf.Sqrt(jumpForce * -2f * gravityValue);
+    }
+
+    public void SlashAttack()
+    {
+        StartCoroutine(Stop(3));
+        attackController.Attack();
+    }
+
+    IEnumerator Stop(float seconds)
+    {
+        currentSpeed = 0f;
+        yield return new WaitForSeconds(seconds);
+        currentSpeed = walkingSpeed;
+    }
+
+    public void StopMovement()
     {
         isAttacking = true;
     }
 
-    public void StopAttacking()
+    public void ContinueMovement()
     {
         isAttacking = false;
-        attackTimer = 0f;
+    }
+
+    public void StartJumpRotation()
+    {
+        jumpAttacking = true;
+    }
+
+    public void StopJumpRotation()
+    {
+        jumpAttacking = false;
+    }
+
+    public void ReleaseProejctile()
+    {
+        projectile.ReleaseProjectile();
+    }
+
+    private void RotateTowardsTarget()
+    {
+        Vector3 targetDirection = player.transform.position - transform.position;
+        targetDirection.y = 0; // Set the y-component to zero
+
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+        // Smoothly rotate towards the target rotation
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
     }
 }

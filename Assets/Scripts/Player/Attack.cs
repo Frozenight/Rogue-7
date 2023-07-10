@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,11 +21,13 @@ public class Attack : MonoBehaviour
     private float globalAttackCooldown = 0f;
     private float renderValue = 0f; // Initial value of "_RenderValue"
     private float renderTransitionSpeed = 1f;
+    private Movement movementController;
 
     private void Awake()
     {
         playerInput = GetComponent<InputReader>();
         cooldownManager = new AbilityCooldownManager();
+        movementController = GetComponent<Movement>();
     }
 
     private void Start()
@@ -52,7 +55,7 @@ public class Attack : MonoBehaviour
             return;
         }
         SetNextAbilityIndex();
-        abilities[currentAbilityIndex].ActivateAbility(target, hand, anim, animEventController);
+        abilities[currentAbilityIndex].ActivateAbility(this.gameObject, target, hand, anim, animEventController);
         globalAttackCooldown += currentAbility.AbilitySwitchCooldown;
         int cooldownIndex = System.Array.IndexOf(abilities, currentAbility);
         cooldownManager.StartCooldown(currentAbility, currentAbility.Cooldown, cooldownImages[cooldownIndex]);
@@ -100,5 +103,21 @@ public class Attack : MonoBehaviour
                 handMaterialShader.SetColor("_Color", Color.grey);
                 return;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("EnemyAttack"))
+        {
+            StartCoroutine(StunPlayer(2.5f));
+            anim.SetTrigger("NormalHit");
+        }
+    }
+
+    IEnumerator StunPlayer(float stunDuration)
+    {
+        movementController.StopMovement();
+        yield return new WaitForSeconds(stunDuration);
+        movementController.ContinueMovement();
     }
 }

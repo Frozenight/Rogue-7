@@ -9,17 +9,28 @@ public class SimpleProjectileAbility : Ability
     [SerializeField] private string releaseTriggerName;
     [SerializeField] private GameObject hitPrefab;
 
-    public override void ActivateAbility(GameObject target, GameObject hand, Animator anim, AnimatorEvents animEventController)
+    public override void ActivateAbility(GameObject attacker, GameObject target, GameObject hand, Animator anim, AnimatorEvents animEventController)
     {
         GameObject projectileObject = Instantiate(projectilePrefab, hand.transform.position, Quaternion.identity);
         SimpleProjectile projectile = projectileObject.GetComponent<SimpleProjectile>();
+
+        if(animEventController == null)
+        {
+            attacker.GetComponent<GoblinMovement>().projectile = projectile;
+            projectile.enemyTag = "Player";
+        }
+        else
+        {
+            projectile.enemyTag = "Enemy";
+        }
 
         if (projectile != null)
         {
             projectile.SetTarget(target);
             projectile.handPosition = hand;
             projectile.hitVFX = hitPrefab;
-            animEventController.projectile = projectile;
+            if (animEventController != null)
+                animEventController.projectile = projectile;
             projectile.SetAnimator(anim, releaseTriggerName);
             projectile.TriggerAnimation();
         }

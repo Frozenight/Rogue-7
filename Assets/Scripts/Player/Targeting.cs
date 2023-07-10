@@ -8,6 +8,7 @@ public class Targeting : MonoBehaviour
     private List<Transform> enemies = new List<Transform>(); // List to store enemy transforms
     private int currentTargetIndex = -1; // Index of the currently targeted enemy
     private Transform currentTarget; // Reference to the currently targeted enemy
+    private Vector3 offset = new Vector3(0, 0.6f, 0);
 
     public float searchRadius = 10f; // Radius to search for enemies
     [SerializeField] private GameObject underTargetVFX;
@@ -54,7 +55,7 @@ public class Targeting : MonoBehaviour
             // Update the current target reference
             currentTarget = enemies[currentTargetIndex];
             underTargetVFX.SetActive(true);
-            underTargetVFX.transform.position = currentTarget.position + Vector3.down * (currentTarget.localScale.y / 2);
+
         }
         else
         {
@@ -68,5 +69,11 @@ public class Targeting : MonoBehaviour
     public Transform GetTarget()
     {
         return currentTarget;
+    }
+
+    private void Update()
+    {
+        if (currentTarget != null)
+            underTargetVFX.transform.position = currentTarget.position + Vector3.down * (currentTarget.localScale.y / 2) + offset;
     }
 }
