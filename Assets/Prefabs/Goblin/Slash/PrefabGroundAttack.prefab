@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  collider: {fileID: 2963103077120170548}
 --- !u!65 &2963103077120170548
 BoxCollider:
   m_ObjectHideFlags: 0

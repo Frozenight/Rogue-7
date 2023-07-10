@@ -24,6 +24,8 @@ public class GoblinMovement : MonoBehaviour
     private float attackInterval = 5f; // Interval for JumpAttack animation
     private float attackTimer = 0f;
 
+    public bool isDead = false;
+
     public bool groundedPlayer
     {
         get { return _groundedPlayer; }
@@ -53,6 +55,8 @@ public class GoblinMovement : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+            return;
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
